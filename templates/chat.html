@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Bangers&family=Chewy&family=Permanent+Marker&family=Pacifico&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(to bottom right, #2c3e50, #34495e);
+        }
+
+        .column {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-column {
+            border-right: 1px solid #ccc;
+            background-color: rgba(199, 187, 191, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #f8e5b2;
+            margin-bottom: 50px;
+            font-family: 'Fredoka One', sans-serif; /* Example cartoonized font */
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background-color: rgba(10, 10, 10, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f3dea4;
+        }
+
+        .form-group input[type="file"] {
+            display: none;
+        }
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            z-index: 1;
+        }
+        .dropdown-options div {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .dropdown-options div:hover {
+            background-color: #f0f0f0;
+        }
+        .form-group input:focus + .dropdown-options, 
+        .dropdown-options:hover {
+            display: block;
+        }
+        .form-columns {
+            display: flex;
+            gap: 20px;
+        }
+        .form-columns .column {
+            flex: 1;
+        }
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 20px;
+            max-height: calc(100vh - 40px);
+        }
+        .chat-bubble {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 20px; /* More rounded chat bubbles */
+            max-width: 80%;
+            display: inline-block;
+            clear: both;
+            position: relative;
+            text-align: left; /* Left-aligning content */
+        }
+        .chat-bubble:after {
+            content: '';
+            position: absolute;
+            border-style: solid;
+            display: block;
+            width: 0;
+            z-index: 1;
+        }
+        .chat-bubble.prompt {
+            background: #404040; /* Darker ASH color */
+            align-self: flex-end;
+            color: #1ae47f
+        }
+        .chat-bubble.prompt:after {
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent #404040;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .chat-bubble.response {
+            background: #404040; 
+            align-self: flex-start;
+            color: #40e0d0;
+        }
+        .chat-bubble.response:after {
+            border-width: 10px 10px 10px 0;
+            border-color: transparent #404040 transparent transparent;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .chat-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .prompt-container, .response-container {
+            border-radius: 20px;
+            margin-bottom: 20px; /* Two-line gap */
+            padding: 10px;
+            width: 85%;
+        }
+        .prompt-container {
+            align-self: flex-end;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 20px;
+        }
+
+        .prompt-container .chat-label {
+            margin-right: 10px;
+            align-self: flex-end;
+            color:rgba(255, 255, 255, 0.8);
+        }
+
+        .prompt-container .chat-bubble {
+            align-self: flex-end;
+            text-align: justify;
+        }
+
+        .response-container {
+            align-self: flex-start;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+        .response-container .exec-label{
+            margin-right: 10px;
+            align-self: flex-start;
+            color:rgba(122, 197, 248, 0.8);
+        }
+        .response-container .exec-container{
+            align-self: flex-start;
+            text-align: justify;
+            background: #404040;
+            color: #40e0d0;
+        }
+        .response-container .chat-label {
+            margin-right: 10px;
+            align-self: flex-start;
+            color:rgba(255, 255, 255, 0.8);
+        }
+
+        .response-container .chat-bubble {
+            align-self: flex-start;
+            text-align: justify;
+        }
+        .form-group.send-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button#send-button {
+            position: relative;
+            padding: 15px 30px;
+            background-color: #f3f3ee;
+            color: #f3c0c0;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        button#send-button:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid #0a0a0a;
+        }
+
+        button#send-button:hover {
+            background-color: #f3dea4;
+        }
+    </style>
+</head>
+<body>
+    <div class="column left-column">
+        <h1 class="title">SUMMRYZE</h1>
+        <form id="input-form">
+            <div class="form-group">
+                <textarea id="document-content" name="document-content" rows="20" placeholder="Document Content Here.."></textarea>
+
+                <div>
+                    <textarea id="system-prompt" name="system-prompt" rows="2" placeholder="Enter a System Prompt here..."></textarea>
+                </div>
+            </div>
+            <div class="form-columns">
+                <div class="column">
+                    <div class="form-group">
+                        <input type="text" id="intent" name="intent" placeholder="Intent of the query">
+                        <div class="dropdown-options">
+                            <div>Summarize the following text</div>
+                            <div>Write a poem from the text</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="expected-length" name="expected-length" placeholder="Expected Length">
+                        <div class="dropdown-options">
+                            <div>3 Bullet Points</div>
+                            <div>A Detailed Paragraph</div>
+                            <div>No limit</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="focus" name="focus" placeholder="Focus">
+                        <div class="dropdown-options">
+                            <div>Factors changing the outcome</div>
+                            <div>Analysis of Key-points</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="form-group">
+                        <input type="text" id="tone" name="tone" placeholder="Tone">
+                        <div class="dropdown-options">
+                            <div>Professional</div>
+                            <div>Lawyer-like</div>
+                            <div>Casual</div>
+                            <div>Friendly</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="target-audience" name="target-audience" placeholder="Target Audience">
+                        <div class="dropdown-options">
+                            <div>Legal Professionals</div>
+                            <div>General People</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        
+                        <input type="text" id="emphasis" name="emphasis" placeholder="Contextual Emphasis">
+                        <div class="dropdown-options">
+                            <div>Any missing points</div>
+                            <div>Validity of the contract</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input3">Additional Customization</label>
+                <textarea id="customize" name="customize" rows="3" placeholder="Type here..."></textarea>
+            </div>
+            <div class="form-group">
+                <button type="button" id="send-button"></button>
+            </div>
+        </form>
+    </div>
+    <div class="column right-column">
+        <div class="chat-container" id="chat-container">
+            <!-- Chat messages will be appended here -->
+        </div>
+    </div>
+
+    <script>
+        function stylizeText(text) {
+            // Bold text between **
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert - to bullet points
+            text = text.replace(/^-\s(.+)$/gm, '<li>$1</li>');
+            text = text.replace(/<li>/g, '<ul><li>').replace(/<\/li>(?![\n\r]*<li>)/g, '</li></ul>');
+            
+            return text;
+        }
+        // Refreshes all text fields
+        window.onload = function() {
+            document.getElementById('document-content').value = '';
+            document.getElementById('system-prompt').value = '';
+            document.getElementById('intent').value = '';
+            document.getElementById('expected-length').value = '';
+            document.getElementById('focus').value = '';
+            document.getElementById('tone').value = '';
+            document.getElementById('target-audience').value = '';
+            document.getElementById('emphasis').value = '';
+            document.getElementById('customize').value = '';
+        };
+
+        // Show dropdown options on input focus
+        document.querySelectorAll('.form-group input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.nextElementSibling.style.display = 'block';
+            });
+        });
+
+        // Hide dropdown options when selecting an option
+        document.querySelectorAll('.dropdown-options div').forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.parentElement.previousElementSibling;
+                input.value = this.innerText;
+                this.parentElement.style.display = 'none';
+            });
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            document.querySelectorAll('.dropdown-options').forEach(dropdown => {
+                if (!event.target.closest('.form-group input')) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+
+        // Hide dropdown when pressing Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.dropdown-options').forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+        });
+        document.getElementById('send-button').addEventListener('click', async function() {
+            
+            const data = {
+                'sys_prompt': document.getElementById('system-prompt').value,
+                'document': document.getElementById('document-content').value,
+                'intent': document.getElementById('intent').value,
+                'tone': document.getElementById('tone').value,
+                'length': document.getElementById('expected-length').value,
+                'focus': document.getElementById('focus').value,
+                'target_audience': document.getElementById('target-audience').value,
+                'emphasis': document.getElementById('emphasis').value,
+                'customization': document.getElementById('customize').value
+            };
+
+            // Calling the API endpoint to generate response and the user prompt
+            const response = await fetch('/gen-sum', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+
+            const responseData = await response.json();
+            const chatContainer = document.getElementById('chat-container');
+
+            const promptContainer = document.createElement('div');
+            promptContainer.className = 'prompt-container';
+
+            const promptLabel = document.createElement('div');
+            promptLabel.className = 'chat-label';
+            promptLabel.innerText = 'PROMPT';
+
+            const promptBubble = document.createElement('div');
+            promptBubble.className = 'chat-bubble prompt';
+            //promptBubble.innerText = responseData.user_prompt;
+            promptBubble.innerHTML = responseData.user_prompt;
+
+            promptContainer.appendChild(promptLabel);
+            promptContainer.appendChild(promptBubble);
+
+            chatContainer.appendChild(promptContainer);
+
+            // Wait for 1 second
+            setTimeout(() => {
+                const responseContainer = document.createElement('div');
+                responseContainer.className = 'response-container';
+
+                const responseLabel = document.createElement('div');
+                responseLabel.className = 'chat-label';
+                responseLabel.innerText = 'AI Summary';
+                
+                const execLabel = document.createElement('div');
+                execLabel.className = 'exec-label';
+                execLabel.innerText = 'Execution Details';
+
+                const execContainer = document.createElement('div');
+                execContainer.className = 'exec-container';
+                execContainer.innerHTML = `# of Input Tokens: ${responseData.input_tokens}\n\n# of Output Tokens: ${responseData.output_tokens}\n\nExecution Time: ${responseData.runtime.toFixed(2)} Seconds`;
+
+                const responseBubble = document.createElement('div');
+                responseBubble.className = 'chat-bubble response';
+                // responseBubble.innerText = responseData.prompt_response;
+                responseBubble.innerHTML = stylizeText(responseData.prompt_response);
+
+                responseContainer.appendChild(execLabel);
+                responseContainer.appendChild(execContainer); 
+
+                responseContainer.appendChild(responseLabel);
+                responseContainer.appendChild(responseBubble);
+
+                chatContainer.appendChild(responseContainer);
+            }, 1000);
+
+            chatContainer.scrollTo(0, chatContainer.scrollHeight);
+        });
+
+    </script>
+</body>
+</html>

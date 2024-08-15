@@ -1,0 +1,6 @@
+# directories
+test/
+_pycache_
+router/_pycache_
+src/_pycache_
+.env
