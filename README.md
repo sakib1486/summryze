@@ -37,7 +37,9 @@ We can replace MY_FLASK_APP with whatever name we like.
   
 `docker run -p 5000:5000 MY_FLASK_APP`
 
-The chat page would be available at **localhost:5000/chat**.
+The chat page would be available at 
+
+`**localhost:5000/chat**`
 
 # Running from the CLI
 
@@ -51,4 +53,6 @@ After the pip ran successfully, hit:
 
 `flask run`
 
-The app should be available at **localhost:5000/chat**.
+The app should be available at 
+
+`**localhost:5000/chat**`
