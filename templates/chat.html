@@ -114,10 +114,10 @@
             max-height: calc(100vh - 40px);
         }
         .chat-bubble {
-            margin: 10px 0;
+            margin: 10px 10px;
             padding: 10px;
             border-radius: 20px; /* More rounded chat bubbles */
-            max-width: 80%;
+            max-width: 90%;
             display: inline-block;
             clear: both;
             position: relative;
@@ -135,6 +135,11 @@
             background: #404040; /* Darker ASH color */
             align-self: flex-end;
             color: #1ae47f
+        }
+        .chat-bubble.exec {
+            background: #404040; /* Darker ASH color */
+            align-self: flex-end;
+            color: #5aeea4
         }
         .chat-bubble.prompt:after {
             border-width: 10px 0 10px 10px;
@@ -156,6 +161,10 @@
             transform: translateY(-50%);
         }
         .chat-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .exec-label {
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -445,8 +454,8 @@
                 execLabel.innerText = 'Execution Details';
 
                 const execContainer = document.createElement('div');
-                execContainer.className = 'exec-container';
-                execContainer.innerHTML = `# of Input Tokens: ${responseData.input_tokens}\n\n# of Output Tokens: ${responseData.output_tokens}\n\nExecution Time: ${responseData.runtime.toFixed(2)} Seconds`;
+                execContainer.className = 'chat-bubble exec';
+                execContainer.innerHTML = `<ul><li># of Input Tokens: ${responseData.input_tokens}</li><li># of Output Tokens: ${responseData.output_tokens}</li><li>Execution Time: ${responseData.runtime.toFixed(2)} Seconds</li></ul>`;
 
                 const responseBubble = document.createElement('div');
                 responseBubble.className = 'chat-bubble response';
