@@ -11,9 +11,11 @@ There are two ways to run the app.
 You need an OPENAI_KEY to communicate to the GPT models irrespective of the option you choose to run the app. Once you have your key, do the following on CLI:
 
 - Git clone this repository by
+
 `git clone https://github.com/sakib1486/summryze.git`
 
 - Navigate into the directory cloned:
+
 `cd summryze`
 
 - Create a new file named .env and paste the contents of the .env.example file.
@@ -26,10 +28,13 @@ You need an OPENAI_KEY to communicate to the GPT models irrespective of the opti
 If you do not have docker installed, please go to the official login page, and install docker desktop and run it. After you have succesfully installed docker desktop, follow the steps below in the terminal/powershell:
 
 - First, we build the docker image with necessary libraries by hitting:
+  
 `docker build -t MY_FLASK_APP .`
+
 We can replace MY_FLASK_APP with whatever name we like.
 
 - Finally, run the app by:
+  
 `docker run -p 5000:5000 MY_FLASK_APP`
 
 The chat page would be available at **localhost:5000/chat**.
